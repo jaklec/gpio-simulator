@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+group = 'se.jaklec.gpio'
+version = '0.1-SNAPSHOT'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.guava:guava:17.0', 'commons-validator:commons-validator:1.4.0'
+    testCompile 'junit:junit:4.11', 'org.codehaus.groovy:groovy-all:2.3.2'
+}
+
+
