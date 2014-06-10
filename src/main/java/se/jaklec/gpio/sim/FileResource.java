@@ -6,5 +6,5 @@ import java.io.IOException;
 @FunctionalInterface
 public interface FileResource<T, X extends IOException> {
 
-    T accept(T instance) throws X;
+    void accept(T instance) throws X;
 }

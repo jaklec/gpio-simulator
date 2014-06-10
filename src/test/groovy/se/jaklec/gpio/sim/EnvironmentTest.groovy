@@ -53,12 +53,21 @@ class EnvironmentTest {
     }
 
     @Test
-    void "set direction" () {
+    void "set direction to in" () {
         Environment.Builder.newBuilder().forPort(13).
                 withBase(gpioDir).
                 withDirection(Environment.IN).
                 build().create()
         Files.readAllLines(Paths.get(gpioDir + "/gpio13/direction")).each { s -> assert "in" == s }
+    }
+
+    @Test
+    void "set direction to out" () {
+        Environment.Builder.newBuilder().forPort(13).
+                withBase(gpioDir).
+                withDirection(Environment.OUT).
+                build().create()
+        Files.readAllLines(Paths.get(gpioDir + "/gpio13/direction")).each { s -> assert "out" == s }
     }
 
     def void assertExists(final String file, final Environment env) {

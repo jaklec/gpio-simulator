@@ -27,27 +27,24 @@ public class Environment {
 
     public void create() throws IOException {
         Path path = Paths.get(base);
-        Path exportPath = Paths.get(path + "/export");
-        createResource(exportPath, p -> {
-           Files.createDirectories(path);
-           return Files.createFile(p);
+        createResource(path, p -> {
+           Files.createDirectories(p);
+           Files.createFile(Paths.get(p + "/export"));
         });
 
         Path portDir = Paths.get(path + "/gpio" + port);
-        createResource(Paths.get(path + "/gpio" + port), Files::createDirectories);
+        createResource(portDir, Files::createDirectories);
 
-        Path directionPath = Paths.get(portDir + "/direction");
-        createResource(directionPath, p -> {
+        createResource(Paths.get(portDir + "/direction"), p -> {
            Files.createFile(p);
-           return Files.write(p, IN.getBytes());
+           Files.write(p, direction.getBytes());
         });
     }
 
-    private Path createResource(Path p, FileResource<Path, IOException> block) throws IOException {
+    private void createResource(Path p, FileResource<Path, IOException> block) throws IOException {
         if (Files.notExists(p)) {
-            return block.accept(p);
+            block.accept(p);
         }
-        return p;
     }
 
     public static class Builder {
