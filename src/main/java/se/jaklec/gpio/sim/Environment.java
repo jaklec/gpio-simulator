@@ -1,6 +1,6 @@
 package se.jaklec.gpio.sim;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,73 +9,54 @@ import java.nio.file.Paths;
 
 public class Environment {
 
-    public static final String IN = "in";
-    public static final String OUT = "out";
+    public enum Direction {
+        IN("in"), OUT("out");
 
-    public final String base;
-    public final int port;
-    public final String direction;
+        public final String value;
 
-    private Environment(Builder builder) {
-        base = builder.base;
-        port = builder.port;
-        direction = builder.direction;
-        Preconditions.checkNotNull(base, "Must supply a base directory");
-        Preconditions.checkNotNull(port, "Must supply a port number");
-        Preconditions.checkNotNull(direction, "Must be either 'in' or 'out'");
+        private Direction(final String value) {
+            this.value = value;
+        }
     }
 
-    public void create() throws IOException {
-        Path path = Paths.get(base);
-        createResource(path, p -> {
-           Files.createDirectories(p);
-           Files.createFile(Paths.get(p + "/export"));
-        });
+    public final Integer port;
+    public final Path root;
+    public final Direction direction;
+    public final Path exportFile;
+    public final Path portDirectoryPath;
+    public final Path directionFile;
+    public final Path valueFile;
 
-        Path portDir = Paths.get(path + "/gpio" + port);
-        createResource(portDir, Files::createDirectories);
-
-        createResource(Paths.get(portDir + "/direction"), p -> {
-           Files.createFile(p);
-           Files.write(p, direction.getBytes());
-        });
+    public Environment(final Integer port, final Path root, final Direction direction) {
+        Validate.notNull(root, "Must supply root directory");
+        this.port = port;
+        this.root = root;
+        this.direction = direction;
+        this.exportFile = Paths.get(root + "/export");
+        this.portDirectoryPath = Paths.get(root + "/gpio" + port);
+        this.directionFile = Paths.get(portDirectoryPath + "/direction");
+        this.valueFile = Paths.get(portDirectoryPath + "/value");
     }
 
-    private void createResource(Path p, FileResource<Path, IOException> block) throws IOException {
+    public void build() {
+        try {
+            createResource(exportFile.getParent(), Files::createDirectories);
+            createResource(exportFile, Files::createFile);
+            Files.write(exportFile, port.toString().getBytes());
+
+            createResource(directionFile.getParent(), Files::createDirectories);
+            createResource(directionFile, Files::createFile);
+            Files.write(directionFile, direction.value.getBytes());
+
+            createResource(valueFile, Files::createFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void createResource(Path p, final FileResource<Path, IOException> block) throws IOException {
         if (Files.notExists(p)) {
             block.accept(p);
-        }
-    }
-
-    public static class Builder {
-
-        private String base;
-        private int port;
-        private String direction;
-
-        private Builder() {}
-
-        public Builder withDirection(final String direction) {
-            this.direction = direction;
-            return this;
-        }
-
-        public Builder forPort(final int port) {
-            this.port = port;
-            return this;
-        }
-
-        public Builder withBase(final String base) {
-            this.base = base;
-            return this;
-        }
-
-        public static Builder newBuilder() {
-            return new Builder();
-        }
-
-        public Environment build() {
-            return new Environment(this);
         }
     }
 }
