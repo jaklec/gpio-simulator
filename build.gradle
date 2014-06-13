@@ -13,4 +13,15 @@ dependencies {
     testCompile 'junit:junit:4.11'
 }
 
+jar {
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    manifest {
+        attributes 'Main-Class': 'se.jaklec.gpio.sim.Sim'
+    }
+}
+
 
