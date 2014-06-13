@@ -1,6 +1,5 @@
 package se.jaklec.gpio.sim;
 
-import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
@@ -29,8 +28,7 @@ public class Environment {
     public final Path valueFile;
 
     public Environment(final Integer port, final Path root, final Direction direction) {
-//        Validate.notNull(root, "Must supply root directory");
-        Preconditions.checkNotNull(root, "Must supply root directory");
+        Validate.notNull(root, "Must supply root directory");
         this.port = port;
         this.root = root;
         this.direction = direction;
