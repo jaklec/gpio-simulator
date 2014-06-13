@@ -7,5 +7,7 @@ It's currently not configurable, which means it must run as root on a regular se
 Note that even though it is dead simple, it still requires Java 8 to run.
 
 $> gradle assemble
+
 $> cd build/libs
+
 $> sudo java -jar gpio-simulator-0.1-SNAPSHOT.jar
