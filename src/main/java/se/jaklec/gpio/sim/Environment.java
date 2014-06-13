@@ -1,6 +1,8 @@
 package se.jaklec.gpio.sim;
 
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Environment {
+
+    private static final Logger logger = LoggerFactory.getLogger(Environment.class);
 
     public enum Direction {
         IN("in"), OUT("out");
@@ -50,6 +54,7 @@ public class Environment {
 
             createResource(valueFile, Files::createFile);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
